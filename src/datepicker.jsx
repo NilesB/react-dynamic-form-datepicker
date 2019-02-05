@@ -1,15 +1,17 @@
 import React from 'react';
-import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Util from '@ninetynine/util';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import 'react-day-picker/lib/style.css';
+import {
+    formatDate,
+    parseDate,
+} from 'react-day-picker/moment';
 
-const FormDatePicker = ({ name, placeholder, value, valid, onChange }) => {
+const FormDatePicker = ({ name, placeholder, value, valid, onChange, dayPickerProps, dayPickerInputProps }) => {
     const onInternalChange = date => {
         const event = document.createEvent('Event');
-        const value = date.toISOString()
-            .slice(0, 19)
-            .replace('T', ' ');
+        const value = date;
 
         event.initEvent('onChange', true, true);
         window.dispatchEvent(event);
@@ -31,19 +33,25 @@ const FormDatePicker = ({ name, placeholder, value, valid, onChange }) => {
     };
 
     const className = classNames([
-        'rdf-input',
-        { 
+        'DayPickerInput rdf-input',
+        {
             'input-invalid': !valid,
-            'input-valid': valid
+            'input-valid': valid,
         },
     ]);
 
     return (
-        <DatePicker
-            className={className}
-            placeholderText={placeholder || 'Select a date'}
-            selected={Util.isEmpty(value) ? null : new Date(value)}
-            onChange={onInternalChange}
+        <DayPickerInput
+            onDayChange={onInternalChange}
+            placeholder={placeholder}
+            dayPickerProps={dayPickerProps}
+            value={value}
+            inputProps={{
+                className,
+            }}
+            formatDate={formatDate}
+            parseDate={parseDate}
+            {...dayPickerInputProps}
         />
     );
 };
@@ -54,6 +62,8 @@ FormDatePicker.defaultProps = {
     value: null,
     valid: true,
     onChange: () => null,
+    dayPickerProps: {},
+    dayPickerInputProps: {},
 };
 
 FormDatePicker.propTypes = {
@@ -62,6 +72,8 @@ FormDatePicker.propTypes = {
     value: PropTypes.string,
     valid: PropTypes.bool,
     onChange: PropTypes.func,
+    dayPickerProps: PropTypes.object,
+    dayPickerInputProps: PropTypes.object,
 };
 
 export { FormDatePicker as default };
